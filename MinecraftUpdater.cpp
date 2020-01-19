@@ -88,8 +88,25 @@ int main(int argc, char** argv)
 	}
 
 	std::string latestBuildURL;
-	manifest["versions"][0]["url"].get_to(latestBuildURL);
 
+	const constexpr auto releaseStr = "release";
+	const auto& versionCollection = manifest["versions"];
+	{
+		int i = 0;
+		for (; i < int(versionCollection.size()); ++i)
+		{
+			if (versionCollection[i]["type"] == releaseStr)
+			{
+				break;
+			}
+		}
+		if (i >= int(versionCollection.size()))
+		{
+			std::cerr << "No build of type 'release' could be found." << std::endl;
+			return -1;
+		}
+		versionCollection[i]["url"].get_to(latestBuildURL);
+	}
 	jsonData.clear();
 
 	///Establish url for accessing the information for the latest version of Minecraft from the web
